@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
-public class Correcao {
+public class Correcao implements Persistable {
 
     private Long id;
     private String item;
@@ -17,10 +17,12 @@ public class Correcao {
     private List<Chave> chave;
 
     @Id
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
