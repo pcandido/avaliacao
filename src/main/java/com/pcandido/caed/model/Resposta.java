@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
-public class Resposta {
+public class Resposta implements Persistable {
 
     private Long id;
     private LocalDateTime dataHora;
@@ -16,10 +16,12 @@ public class Resposta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
