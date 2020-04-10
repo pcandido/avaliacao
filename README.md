@@ -42,3 +42,7 @@ retornar os itens reservados até que eles se esgotem. Se não houver
 itens DISPONÍVEIS nem RESERVADOS, a API deverá alertar o corretor.
 10. As situações de um item de correção pode ser: DISPONIVEL ->
 RESERVADA -> CORRIGIDA | COM_DEFEITO
+
+## Decisões tomadas
+
+### Java vs NodeJS 
