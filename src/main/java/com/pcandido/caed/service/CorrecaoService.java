@@ -27,4 +27,9 @@ public class CorrecaoService extends BaseService<Correcao> {
         return proxima.orElseThrow(NoAvailableCorrecoes::new);
     }
 
+    public Correcao setComDefeito(Correcao correcao) {
+        correcao.setSituacao(Situacao.COM_DEFEITO);
+        return repository.save(correcao);
+    }
+
 }
