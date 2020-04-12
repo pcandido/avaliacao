@@ -7,6 +7,8 @@ import com.pcandido.caed.model.Correcao;
 import com.pcandido.caed.model.Situacao;
 import com.pcandido.caed.repository.CorrecaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -77,6 +79,10 @@ public class CorrecaoService extends BaseService<Correcao> {
         toChange.setSituacao(Situacao.RESERVADA);
         //persiste
         return repository.save(toChange);
+    }
+
+    public Page<Correcao> getReservadas(Pageable pageable) {
+        return this.repository.findAllBySituacao(Situacao.RESERVADA, pageable);
     }
 
 }

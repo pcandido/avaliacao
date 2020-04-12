@@ -11,7 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -193,6 +198,24 @@ public class CorrecaoServiceTest {
         Correcao sample = createCorrecao(1, Situacao.COM_DEFEITO, 1);
         when(repository.getOne(sample.getId())).thenAnswer(invocationOnMock -> sample);
         assertThrows(IllegalTransactionException.class, () -> service.reservar(sample.getId()));
+    }
+
+    @Test
+    public void deve_retornar_todos_as_RESERVADAS_quando_solicitado() {
+        Pageable pageable = PageRequest.of(1, 4);
+        List<Correcao> samples = List.of(
+                createCorrecao(1, Situacao.RESERVADA, 1),
+                createCorrecao(2, Situacao.RESERVADA, 2),
+                createCorrecao(3, Situacao.RESERVADA, 3),
+                createCorrecao(4, Situacao.RESERVADA, 4)
+        );
+        Page<Correcao> page = new PageImpl<>(samples, pageable, 20);
+
+        when(repository.findAllBySituacao(Situacao.RESERVADA, pageable)).thenAnswer(invocationOnMock -> page);
+        Page<Correcao> result = service.getReservadas(pageable);
+
+        assertEquals(page, result);
+        verify(repository).findAllBySituacao(Situacao.RESERVADA, pageable);
     }
 
 }
