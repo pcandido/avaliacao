@@ -25,15 +25,19 @@ public class CorrecaoService extends BaseService<Correcao> {
         return repository.getOne(id);
     }
 
-    public Correcao getProxima() throws NoAvailableCorrecoes {
+    private Correcao getProxima(boolean includeReservada) throws NoAvailableCorrecoes {
         //obtêm a próxima correção disponível do repositório
         Optional<Correcao> proxima = repository.findFirstBySituacaoOrderByOrdem(Situacao.DISPONIVEL);
         //se não existir nenhuma disponível, obtêm a próxima reservada
-        if (proxima.isEmpty()) {
+        if (proxima.isEmpty() && includeReservada) {
             proxima = repository.findFirstBySituacaoOrderByOrdem(Situacao.RESERVADA);
         }
         //retorna a correção obtida ou lança uma exceção se nenhuma correção foi obtida
         return proxima.orElseThrow(NoAvailableCorrecoes::new);
+    }
+
+    public Correcao getProxima() throws NoAvailableCorrecoes {
+        return getProxima(true);
     }
 
     public Correcao setComDefeito(long id) throws NoAvailableCorrecoes, NonNextForbiddenException, IllegalTransactionException {
@@ -42,8 +46,7 @@ public class CorrecaoService extends BaseService<Correcao> {
 
         if (toChange.getSituacao() == Situacao.DISPONIVEL) {
             //se a situação da correção a alterar for DISPONIVEL, é necessário verificar se ela é de fato a próxima
-            Correcao next = repository.findFirstBySituacaoOrderByOrdem(Situacao.DISPONIVEL).orElseThrow(NoAvailableCorrecoes::new);
-            if (!next.getId().equals(id))
+            if (!getProxima(false).getId().equals(id))
                 //se não for, uma exceção é lançada
                 throw new NonNextForbiddenException();
         } else if (toChange.getSituacao() != Situacao.RESERVADA) {
@@ -66,8 +69,7 @@ public class CorrecaoService extends BaseService<Correcao> {
             throw new IllegalTransactionException();
         }
 
-        Correcao next = repository.findFirstBySituacaoOrderByOrdem(Situacao.DISPONIVEL).orElseThrow(NoAvailableCorrecoes::new);
-        if (!next.getId().equals(id)) {
+        if (!getProxima(false).getId().equals(id)) {
             throw new NonNextForbiddenException();
         }
 
