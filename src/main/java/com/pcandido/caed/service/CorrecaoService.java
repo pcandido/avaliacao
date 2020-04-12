@@ -22,32 +22,35 @@ public class CorrecaoService extends BaseService<Correcao> {
     }
 
     public Correcao getProxima() throws NoAvailableCorrecoes {
-        //get the next DISPONIVEL from the repository
+        //obtêm a próxima correção disponível do repositório
         Optional<Correcao> proxima = repository.findFirstBySituacaoOrderByOrdem(Situacao.DISPONIVEL);
-        //if it does not exists, try to get the next RESERVADA
+        //se não existir nenhuma disponível, obtêm a próxima reservada
         if (proxima.isEmpty()) {
             proxima = repository.findFirstBySituacaoOrderByOrdem(Situacao.RESERVADA);
         }
-        //return the gotten object or throw an exception if no one was found
+        //retorna a correção obtida ou lança uma exceção se nenhuma correção foi obtida
         return proxima.orElseThrow(NoAvailableCorrecoes::new);
     }
 
     public Correcao setComDefeito(long id) throws NoAvailableCorrecoes, NonNextForbiddenException, IllegalTransactionException {
-        //retrieve the object from the repository
+        //recupera a correção do banco de dados
         Correcao toChange = repository.getOne(id);
 
-        //if the object is DISPONIVEL, we must check if it is the next
         if (toChange.getSituacao() == Situacao.DISPONIVEL) {
+            //se a situação da correção a alterar for DISPONIVEL, é necessário verificar se ela é de fato a próxima
             Correcao next = repository.findFirstBySituacaoOrderByOrdem(Situacao.DISPONIVEL).orElseThrow(NoAvailableCorrecoes::new);
             if (!next.getId().equals(id))
+                //se não for, uma exceção é lançada
                 throw new NonNextForbiddenException();
         } else if (toChange.getSituacao() != Situacao.RESERVADA) {
+            //correções reservadas podem ser alteradas em qualquer ordem
+            //correções corrigidas ou com defeito não podem ser alteradas para COM_DEFEITO
             throw new IllegalTransactionException();
         }
 
-        //change situacao
+        //altera a situação
         toChange.setSituacao(Situacao.COM_DEFEITO);
-        //save to repository
+        //persiste
         return repository.save(toChange);
     }
 

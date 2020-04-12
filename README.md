@@ -43,6 +43,13 @@ itens DISPONÍVEIS nem RESERVADOS, a API deverá alertar o corretor.
 10. As situações de um item de correção pode ser: DISPONIVEL ->
 RESERVADA -> CORRIGIDA | COM_DEFEITO
 
-## Decisões tomadas
+## Como executar
+
+## Comentários e explicações 
 
 ### Java vs NodeJS 
+
+### Arquitetura
+
+### Banco de dados
+
