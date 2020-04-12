@@ -21,6 +21,10 @@ public class CorrecaoService extends BaseService<Correcao> {
         this.repository = repository;
     }
 
+    public Correcao getById(long id) {
+        return repository.getOne(id);
+    }
+
     public Correcao getProxima() throws NoAvailableCorrecoes {
         //obtêm a próxima correção disponível do repositório
         Optional<Correcao> proxima = repository.findFirstBySituacaoOrderByOrdem(Situacao.DISPONIVEL);
@@ -34,7 +38,7 @@ public class CorrecaoService extends BaseService<Correcao> {
 
     public Correcao setComDefeito(long id) throws NoAvailableCorrecoes, NonNextForbiddenException, IllegalTransactionException {
         //recupera a correção do banco de dados
-        Correcao toChange = repository.getOne(id);
+        Correcao toChange = getById(id);
 
         if (toChange.getSituacao() == Situacao.DISPONIVEL) {
             //se a situação da correção a alterar for DISPONIVEL, é necessário verificar se ela é de fato a próxima
@@ -50,6 +54,25 @@ public class CorrecaoService extends BaseService<Correcao> {
 
         //altera a situação
         toChange.setSituacao(Situacao.COM_DEFEITO);
+        //persiste
+        return repository.save(toChange);
+    }
+
+    public Correcao reservar(long id) throws NoAvailableCorrecoes, NonNextForbiddenException, IllegalTransactionException {
+        //recupera a correção do banco de dados
+        Correcao toChange = getById(id);
+
+        if (toChange.getSituacao() != Situacao.DISPONIVEL) {
+            throw new IllegalTransactionException();
+        }
+
+        Correcao next = repository.findFirstBySituacaoOrderByOrdem(Situacao.DISPONIVEL).orElseThrow(NoAvailableCorrecoes::new);
+        if (!next.getId().equals(id)) {
+            throw new NonNextForbiddenException();
+        }
+
+        //altera a situação
+        toChange.setSituacao(Situacao.RESERVADA);
         //persiste
         return repository.save(toChange);
     }

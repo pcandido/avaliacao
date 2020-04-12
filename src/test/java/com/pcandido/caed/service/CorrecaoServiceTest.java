@@ -142,4 +142,57 @@ public class CorrecaoServiceTest {
         assertThrows(IllegalTransactionException.class, () -> service.setComDefeito(sample.getId()));
     }
 
+    @Test
+    public void deve_possibilitar_reservar_a_proxima_correcao_disponivel() throws DataException {
+        Correcao sample = createCorrecao(1, Situacao.DISPONIVEL, 1);
+
+        //mocka o repositório para retornar a amostra quando for solicitada uma correção por id
+        when(repository.getOne(sample.getId())).thenAnswer(invocationOnMock -> sample);
+        //mocka o repositório para retornar a amostra como próximo
+        when(repository.findFirstBySituacaoOrderByOrdem(Situacao.DISPONIVEL)).thenAnswer(invocationOnMock -> Optional.of(sample));
+        //mocka o repositório para retornar o objeto "salvo" sem de fato salvá-lo no banco de dados
+        //também testa se a situação do objeto que foi enviado para ser salvo está correta
+        when(repository.save(sample)).thenAnswer(invocationOnMock -> {
+            Correcao correcao = (Correcao) invocationOnMock.getArguments()[0];
+            assertEquals(Situacao.RESERVADA, correcao.getSituacao());
+            return correcao;
+        });
+
+        Correcao saved = service.reservar(sample.getId());
+        assertEquals(Situacao.RESERVADA, saved.getSituacao());
+        verify(repository).save(sample);
+    }
+
+    @Test
+    public void nao_deve_possibilitar_reservar_uma_correcao_disponivel_que_nao_seja_a_proxima() {
+        Correcao nextSample = createCorrecao(1, Situacao.DISPONIVEL, 1);
+        Correcao otherSample = createCorrecao(2, Situacao.DISPONIVEL, 5);
+
+        when(repository.getOne(otherSample.getId())).thenAnswer(invocationOnMock -> otherSample);
+        when(repository.findFirstBySituacaoOrderByOrdem(Situacao.DISPONIVEL)).thenAnswer(invocationOnMock -> Optional.of(nextSample));
+
+        assertThrows(NonNextForbiddenException.class, () -> service.reservar(otherSample.getId()));
+    }
+
+    @Test
+    public void nao_deve_possibilitar_reservar_uma_correcao_RESERVADA() {
+        Correcao sample = createCorrecao(1, Situacao.RESERVADA, 1);
+        when(repository.getOne(sample.getId())).thenAnswer(invocationOnMock -> sample);
+        assertThrows(IllegalTransactionException.class, () -> service.reservar(sample.getId()));
+    }
+
+    @Test
+    public void nao_deve_possibilitar_reservar_uma_correcao_CORRIGIDA() {
+        Correcao sample = createCorrecao(1, Situacao.CORRIGIDA, 1);
+        when(repository.getOne(sample.getId())).thenAnswer(invocationOnMock -> sample);
+        assertThrows(IllegalTransactionException.class, () -> service.reservar(sample.getId()));
+    }
+
+    @Test
+    public void nao_deve_possibilitar_reservar_uma_correcao_COM_DEFEITO() {
+        Correcao sample = createCorrecao(1, Situacao.COM_DEFEITO, 1);
+        when(repository.getOne(sample.getId())).thenAnswer(invocationOnMock -> sample);
+        assertThrows(IllegalTransactionException.class, () -> service.reservar(sample.getId()));
+    }
+
 }
