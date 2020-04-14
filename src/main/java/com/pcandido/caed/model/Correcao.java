@@ -2,10 +2,11 @@ package com.pcandido.caed.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Correcao implements Persistable {
+public class Correcao {
 
     private Long id;
     private String item;
@@ -15,48 +16,52 @@ public class Correcao implements Persistable {
     private Situacao situacao;
     private long ordem;
     private List<Chave> chave;
+    private List<Resposta> respostas;
 
     @Id
-    @Override
     public Long getId() {
         return id;
     }
 
-    @Override
-    public void setId(Long id) {
+    public Correcao setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public String getItem() {
         return item;
     }
 
-    public void setItem(String item) {
+    public Correcao setItem(String item) {
         this.item = item;
+        return this;
     }
 
     public String getReferencia() {
         return referencia;
     }
 
-    public void setReferencia(String referencia) {
+    public Correcao setReferencia(String referencia) {
         this.referencia = referencia;
+        return this;
     }
 
     public String getSequencial() {
         return sequencial;
     }
 
-    public void setSequencial(String sequencial) {
+    public Correcao setSequencial(String sequencial) {
         this.sequencial = sequencial;
+        return this;
     }
 
     public String getSolicitacao() {
         return solicitacao;
     }
 
-    public void setSolicitacao(String solicitacao) {
+    public Correcao setSolicitacao(String solicitacao) {
         this.solicitacao = solicitacao;
+        return this;
     }
 
     @NotNull
@@ -65,8 +70,9 @@ public class Correcao implements Persistable {
         return situacao;
     }
 
-    public void setSituacao(Situacao situacao) {
+    public Correcao setSituacao(Situacao situacao) {
         this.situacao = situacao;
+        return this;
     }
 
     @NotNull
@@ -74,8 +80,9 @@ public class Correcao implements Persistable {
         return ordem;
     }
 
-    public void setOrdem(long ordem) {
+    public Correcao setOrdem(long ordem) {
         this.ordem = ordem;
+        return this;
     }
 
     @ManyToMany
@@ -83,7 +90,31 @@ public class Correcao implements Persistable {
         return chave;
     }
 
-    public void setChave(List<Chave> chave) {
+    public Correcao setChave(List<Chave> chave) {
         this.chave = chave;
+        return this;
+    }
+
+    public Correcao addChave(Chave chave) {
+        if (this.chave == null) this.chave = new ArrayList<>();
+        this.chave.add(chave);
+        return this;
+    }
+
+    @OneToMany(mappedBy = "correcao", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<Resposta> getRespostas() {
+        return respostas;
+    }
+
+    public Correcao setRespostas(List<Resposta> respostas) {
+        this.respostas = respostas;
+        return this;
+    }
+
+    public Correcao addResposta(Resposta resposta) {
+        if (this.respostas == null) this.respostas = new ArrayList<>();
+        resposta.setCorrecao(this);
+        this.respostas.add(resposta);
+        return this;
     }
 }

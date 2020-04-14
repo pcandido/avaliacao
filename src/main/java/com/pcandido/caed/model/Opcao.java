@@ -19,8 +19,9 @@ public class Opcao {
         return id;
     }
 
-    public void setId(Long id) {
+    public Opcao setId(Long id) {
         this.id = id;
+        return this;
     }
 
     @NotNull
@@ -29,8 +30,9 @@ public class Opcao {
         return valor;
     }
 
-    public void setValor(String valor) {
+    public Opcao setValor(String valor) {
         this.valor = valor;
+        return this;
     }
 
     @NotNull
@@ -39,8 +41,9 @@ public class Opcao {
         return descricao;
     }
 
-    public void setDescricao(String descricao) {
+    public Opcao setDescricao(String descricao) {
         this.descricao = descricao;
+        return this;
     }
 
     @ManyToOne
@@ -49,7 +52,8 @@ public class Opcao {
         return chave;
     }
 
-    public void setChave(Chave chave) {
+    public Opcao setChave(Chave chave) {
         this.chave = chave;
+        return this;
     }
 }

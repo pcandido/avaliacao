@@ -5,6 +5,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,8 +20,9 @@ public class Chave {
         return id;
     }
 
-    public void setId(Long id) {
+    public Chave setId(Long id) {
         this.id = id;
+        return this;
     }
 
     @NotNull
@@ -29,8 +31,9 @@ public class Chave {
         return titulo;
     }
 
-    public void setTitulo(String titulo) {
+    public Chave setTitulo(String titulo) {
         this.titulo = titulo;
+        return this;
     }
 
     @OneToMany(mappedBy = "chave")
@@ -40,7 +43,15 @@ public class Chave {
         return opcoes;
     }
 
-    public void setOpcoes(List<Opcao> opcoes) {
+    public Chave setOpcoes(List<Opcao> opcoes) {
         this.opcoes = opcoes;
+        return this;
+    }
+
+    public Chave addOpcao(Opcao opcao) {
+        if (this.opcoes == null) this.opcoes = new ArrayList<>();
+        opcao.setChave(this);
+        this.opcoes.add(opcao);
+        return this;
     }
 }

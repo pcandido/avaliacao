@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
-public class Resposta implements Persistable {
+public class Resposta {
 
     private Long id;
     private LocalDateTime dataHora;
@@ -16,30 +16,32 @@ public class Resposta implements Persistable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Override
     public Long getId() {
         return id;
     }
 
-    @Override
-    public void setId(Long id) {
+    public Resposta setId(Long id) {
         this.id = id;
+        return this;
     }
 
+    @Column(updatable = false)
     public LocalDateTime getDataHora() {
         return dataHora;
     }
 
-    public void setDataHora(LocalDateTime hora) {
+    public Resposta setDataHora(LocalDateTime hora) {
         this.dataHora = hora;
+        return this;
     }
 
     public String getCorretor() {
         return corretor;
     }
 
-    public void setCorretor(String corretor) {
+    public Resposta setCorretor(String corretor) {
         this.corretor = corretor;
+        return this;
     }
 
     @NotNull
@@ -48,8 +50,9 @@ public class Resposta implements Persistable {
         return correcao;
     }
 
-    public void setCorrecao(Correcao correcao) {
+    public Resposta setCorrecao(Correcao correcao) {
         this.correcao = correcao;
+        return this;
     }
 
     @NotNull
@@ -58,8 +61,9 @@ public class Resposta implements Persistable {
         return chave;
     }
 
-    public void setChave(Chave chave) {
+    public Resposta setChave(Chave chave) {
         this.chave = chave;
+        return this;
     }
 
     @NotNull
@@ -68,12 +72,15 @@ public class Resposta implements Persistable {
         return opcao;
     }
 
-    public void setOpcao(Opcao opcao) {
+    public Resposta setOpcao(Opcao opcao) {
         this.opcao = opcao;
+        return this;
     }
 
     @PrePersist()
     public void onInsert() {
-        this.dataHora = LocalDateTime.now();
+        if (this.dataHora == null) {
+            this.dataHora = LocalDateTime.now();
+        }
     }
 }

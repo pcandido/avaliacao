@@ -45,6 +45,22 @@ RESERVADA -> CORRIGIDA | COM_DEFEITO
 
 ## Como executar
 
+## Regras extras
+
+Nem todas as regras de negócio ficaram claras no documento, então tomei
+a liberdade de definir algumas regras extras, baseadas na minha 
+própria compreensão do problema. Vou descrever aqui quais foram elas.
+
+ * Um item pode ter mais de uma chave de correção (mais de uma questão
+ a ser corrigida), mas a especificação da API parece exigir que apenas
+ uma chave seja recebida por vêz. O que deveria acontecer com um item
+ parcialmente corrigido?
+   * Na minha compreensão, o item deveria ser marcado automaticamente
+   como reservado, para que o corretor possa voltar ao item quando
+   desejasse, e pensando em um cenário multi-corretores, para que ele
+   a partir desse momento se responsabilize pela correção do restante
+   daquele item. 
+
 ## Comentários e explicações 
 
 ### Java vs NodeJS 
