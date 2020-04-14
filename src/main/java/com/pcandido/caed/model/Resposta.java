@@ -10,7 +10,7 @@ public class Resposta {
     private Long id;
     private LocalDateTime dataHora;
     private String corretor;
-    private Correcao correcao;
+    private Item item;
     private Chave chave;
     private Opcao opcao;
 
@@ -46,12 +46,12 @@ public class Resposta {
 
     @NotNull
     @ManyToOne
-    public Correcao getCorrecao() {
-        return correcao;
+    public Item getItem() {
+        return item;
     }
 
-    public Resposta setCorrecao(Correcao correcao) {
-        this.correcao = correcao;
+    public Resposta setItem(Item item) {
+        this.item = item;
         return this;
     }
 

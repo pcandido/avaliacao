@@ -1,4 +1,4 @@
-create table correcao
+create table item
 (
     id          bigint      not null primary key,
     item        varchar     not null,
@@ -9,9 +9,9 @@ create table correcao
     ordem       bigint      not null
 );
 
-create index idx_correcao_ordem on correcao (ordem);
+create index idx_item_ordem on item (ordem);
 
-insert into correcao(id, item, referencia, sequencial, solicitacao, situacao, ordem)
+insert into item(id, item, referencia, sequencial, solicitacao, situacao, ordem)
 values (9859662, 'D020006H6', 'upload/correcao_9859662.png', '68300003130128', '2000000885', 'DISPONIVEL', 1),
        (9859663, 'D320006C8', 'upload/correcao_9859663.png', '68300003130127', '2000000886', 'DISPONIVEL', 2),
        (9859664, 'D6530006C7', 'upload/correcao_9859664.png', '68300003130128', '2000000886', 'DISPONIVEL', 3),

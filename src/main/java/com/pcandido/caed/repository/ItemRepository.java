@@ -1,6 +1,6 @@
 package com.pcandido.caed.repository;
 
-import com.pcandido.caed.model.Correcao;
+import com.pcandido.caed.model.Item;
 import com.pcandido.caed.model.Situacao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface CorrecaoRepository extends JpaRepository<Correcao, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    Optional<Correcao> findFirstBySituacaoOrderByOrdem(Situacao situacao);
+    Optional<Item> findFirstBySituacaoOrderByOrdem(Situacao situacao);
 
-    Page<Correcao> findAllBySituacao(Situacao situacao, Pageable pageable);
+    Page<Item> findAllBySituacao(Situacao situacao, Pageable pageable);
 
 }

@@ -1,16 +1,16 @@
 package com.pcandido.caed.controller;
 
-import com.pcandido.caed.service.CorrecaoService;
+import com.pcandido.caed.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-class CorrecaoControllerTest {
+class ItemControllerTest {
 
     @Autowired
-    private CorrecaoController correcaoController;
+    private ItemController itemController;
 
     @MockBean
-    private CorrecaoService correcaoService;
+    private ItemService itemService;
 
 
 }

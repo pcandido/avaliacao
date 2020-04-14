@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Correcao {
+public class Item {
 
     private Long id;
     private String item;
@@ -23,7 +23,7 @@ public class Correcao {
         return id;
     }
 
-    public Correcao setId(Long id) {
+    public Item setId(Long id) {
         this.id = id;
         return this;
     }
@@ -32,7 +32,7 @@ public class Correcao {
         return item;
     }
 
-    public Correcao setItem(String item) {
+    public Item setItem(String item) {
         this.item = item;
         return this;
     }
@@ -41,7 +41,7 @@ public class Correcao {
         return referencia;
     }
 
-    public Correcao setReferencia(String referencia) {
+    public Item setReferencia(String referencia) {
         this.referencia = referencia;
         return this;
     }
@@ -50,7 +50,7 @@ public class Correcao {
         return sequencial;
     }
 
-    public Correcao setSequencial(String sequencial) {
+    public Item setSequencial(String sequencial) {
         this.sequencial = sequencial;
         return this;
     }
@@ -59,7 +59,7 @@ public class Correcao {
         return solicitacao;
     }
 
-    public Correcao setSolicitacao(String solicitacao) {
+    public Item setSolicitacao(String solicitacao) {
         this.solicitacao = solicitacao;
         return this;
     }
@@ -70,7 +70,7 @@ public class Correcao {
         return situacao;
     }
 
-    public Correcao setSituacao(Situacao situacao) {
+    public Item setSituacao(Situacao situacao) {
         this.situacao = situacao;
         return this;
     }
@@ -80,7 +80,7 @@ public class Correcao {
         return ordem;
     }
 
-    public Correcao setOrdem(long ordem) {
+    public Item setOrdem(long ordem) {
         this.ordem = ordem;
         return this;
     }
@@ -90,30 +90,30 @@ public class Correcao {
         return chave;
     }
 
-    public Correcao setChave(List<Chave> chave) {
+    public Item setChave(List<Chave> chave) {
         this.chave = chave;
         return this;
     }
 
-    public Correcao addChave(Chave chave) {
+    public Item addChave(Chave chave) {
         if (this.chave == null) this.chave = new ArrayList<>();
         this.chave.add(chave);
         return this;
     }
 
-    @OneToMany(mappedBy = "correcao", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Resposta> getRespostas() {
         return respostas;
     }
 
-    public Correcao setRespostas(List<Resposta> respostas) {
+    public Item setRespostas(List<Resposta> respostas) {
         this.respostas = respostas;
         return this;
     }
 
-    public Correcao addResposta(Resposta resposta) {
+    public Item addResposta(Resposta resposta) {
         if (this.respostas == null) this.respostas = new ArrayList<>();
-        resposta.setCorrecao(this);
+        resposta.setItem(this);
         this.respostas.add(resposta);
         return this;
     }

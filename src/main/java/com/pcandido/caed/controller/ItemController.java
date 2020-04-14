@@ -1,8 +1,8 @@
 package com.pcandido.caed.controller;
 
-import com.pcandido.caed.exception.NoAvailableCorrecoes;
-import com.pcandido.caed.model.Correcao;
-import com.pcandido.caed.service.CorrecaoService;
+import com.pcandido.caed.exception.NoAvailableItems;
+import com.pcandido.caed.model.Item;
+import com.pcandido.caed.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("correcoes")
-public class CorrecaoController {
+public class ItemController {
 
     @Autowired
-    private CorrecaoService service;
+    private ItemService service;
 
     @GetMapping("proxima")
-    public ResponseEntity<Correcao> getProxima() throws NoAvailableCorrecoes {
+    public ResponseEntity<Item> getProxima() throws NoAvailableItems {
         return ResponseEntity.ok().body(service.getProxima());
     }
 
