@@ -16,7 +16,7 @@ public class Item {
     private Situacao situacao;
     private long ordem;
     private List<Chave> chave;
-    private List<Resposta> respostas;
+    private List<Correcao> correcaos;
 
     @Id
     public Long getId() {
@@ -102,19 +102,19 @@ public class Item {
     }
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
-    public List<Resposta> getRespostas() {
-        return respostas;
+    public List<Correcao> getCorrecaos() {
+        return correcaos;
     }
 
-    public Item setRespostas(List<Resposta> respostas) {
-        this.respostas = respostas;
+    public Item setCorrecaos(List<Correcao> correcaos) {
+        this.correcaos = correcaos;
         return this;
     }
 
-    public Item addResposta(Resposta resposta) {
-        if (this.respostas == null) this.respostas = new ArrayList<>();
-        resposta.setItem(this);
-        this.respostas.add(resposta);
+    public Item addCorrecao(Correcao correcao) {
+        if (this.correcaos == null) this.correcaos = new ArrayList<>();
+        correcao.setItem(this);
+        this.correcaos.add(correcao);
         return this;
     }
 }

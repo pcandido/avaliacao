@@ -37,8 +37,8 @@ public class ItemServiceTest {
     Item itemReservada;
     Item itemCorrigida;
     Item itemComDefeito;
-    Resposta resposta1;
-    Resposta resposta2;
+    Correcao correcao1;
+    Correcao correcao2;
 
 
     @BeforeEach
@@ -122,13 +122,13 @@ public class ItemServiceTest {
                 .addChave(chave1)
                 .addChave(chave2);
 
-        this.resposta1 = new Resposta()
+        this.correcao1 = new Correcao()
                 .setId(1L)
                 .setCorretor("Corretor 1")
                 .setChave(chave1)
                 .setOpcao(chave1.getOpcoes().get(0));
 
-        this.resposta2 = new Resposta()
+        this.correcao2 = new Correcao()
                 .setId(2L)
                 .setCorretor("Corretor 2")
                 .setChave(chave2)
@@ -286,30 +286,30 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void nao_deve_possibilitar_responder_um_item_CORRIGIDO() {
+    public void nao_deve_possibilitar_corrigir_um_item_CORRIGIDO() {
         mockProximo(itemDisponivel1);
-        assertThrows(IllegalTransactionException.class, () -> service.setResposta(itemCorrigida.getId(), resposta1));
+        assertThrows(IllegalTransactionException.class, () -> service.setCorrecao(itemCorrigida.getId(), correcao1));
     }
 
     @Test
-    public void nao_deve_possibilitar_responder_um_item_COM_DEFEITO() {
+    public void nao_deve_possibilitar_corrigir_um_item_COM_DEFEITO() {
         mockProximo(itemDisponivel1);
-        assertThrows(IllegalTransactionException.class, () -> service.setResposta(itemComDefeito.getId(), resposta1));
+        assertThrows(IllegalTransactionException.class, () -> service.setCorrecao(itemComDefeito.getId(), correcao1));
     }
 
     @Test
-    public void nao_deve_aceitar_resposta_se_nao_e_proximo_disponivel() throws DataException {
+    public void nao_deve_aceitar_correcao_se_nao_e_proximo_disponivel() throws DataException {
         mockProximo(itemDisponivel1);
-        assertThrows(NonNextForbiddenException.class, () -> service.setResposta(itemDisponivel2.getId(), resposta1));
+        assertThrows(NonNextForbiddenException.class, () -> service.setCorrecao(itemDisponivel2.getId(), correcao1));
     }
 
     @Test
     public void deve_alterar_situacao_para_corrigido_se_todas_as_chaves_foram_corrigidas() throws DataException {
         mockProximo(itemDisponivel1);
         mockSave(itemReservada, Situacao.CORRIGIDO);
-        itemReservada.addResposta(resposta1);
+        itemReservada.addCorrecao(correcao1);
 
-        Resposta saved = service.setResposta(itemReservada.getId(), resposta2);
+        Correcao saved = service.setCorrecao(itemReservada.getId(), correcao2);
         assertEquals(itemReservada, saved.getItem());
         assertEquals(Situacao.CORRIGIDO, saved.getItem().getSituacao());
         verify(repository).save(itemReservada);
@@ -320,27 +320,27 @@ public class ItemServiceTest {
         mockProximo(itemDisponivel1);
         mockSave(itemDisponivel1, Situacao.RESERVADO);
 
-        Resposta saved = service.setResposta(itemDisponivel1.getId(), resposta2);
+        Correcao saved = service.setCorrecao(itemDisponivel1.getId(), correcao2);
         assertEquals(itemDisponivel1, saved.getItem());
         assertEquals(Situacao.RESERVADO, saved.getItem().getSituacao());
         verify(repository).save(itemDisponivel1);
     }
 
     @Test
-    public void deve_salvar_a_resposta() throws DataException {
+    public void deve_salvar_a_correcao() throws DataException {
         mockProximo(itemDisponivel1);
 
         when(repository.save(itemDisponivel1)).thenAnswer(invocationOnMock -> {
             Item saving = (Item) invocationOnMock.getArguments()[0];
-            assertFalse(itemDisponivel1.getRespostas().isEmpty());
-            assertEquals(itemDisponivel1.getRespostas().get(0), resposta2);
+            assertFalse(itemDisponivel1.getCorrecaos().isEmpty());
+            assertEquals(itemDisponivel1.getCorrecaos().get(0), correcao2);
             return saving;
         });
 
-        Resposta saved = service.setResposta(itemDisponivel1.getId(), resposta2);
-        assertEquals(resposta2, saved);
-        assertFalse(saved.getItem().getRespostas().isEmpty());
-        assertEquals(resposta2, itemDisponivel1.getRespostas().get(0));
+        Correcao saved = service.setCorrecao(itemDisponivel1.getId(), correcao2);
+        assertEquals(correcao2, saved);
+        assertFalse(saved.getItem().getCorrecaos().isEmpty());
+        assertEquals(correcao2, itemDisponivel1.getCorrecaos().get(0));
         assertEquals(itemDisponivel1, saved.getItem());
         verify(repository).save(itemDisponivel1);
     }

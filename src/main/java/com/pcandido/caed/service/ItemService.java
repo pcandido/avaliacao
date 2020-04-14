@@ -3,8 +3,8 @@ package com.pcandido.caed.service;
 import com.pcandido.caed.exception.IllegalTransactionException;
 import com.pcandido.caed.exception.NoAvailableItems;
 import com.pcandido.caed.exception.NonNextForbiddenException;
+import com.pcandido.caed.model.Correcao;
 import com.pcandido.caed.model.Item;
-import com.pcandido.caed.model.Resposta;
 import com.pcandido.caed.model.Situacao;
 import com.pcandido.caed.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,16 +83,16 @@ public class ItemService {
         return repository.save(toChange);
     }
 
-    public Resposta setResposta(long idItem, Resposta resposta) throws IllegalTransactionException, NonNextForbiddenException {
-        //o id da correção será recebido na URL, e não no corpo (dentro da resposta)
+    public Correcao setCorrecao(long idItem, Correcao correcao) throws IllegalTransactionException, NonNextForbiddenException {
+        //o id da correção será recebido na URL, e não no corpo (dentro da correcao)
         Item item = repository.getOne(idItem);
         //verifica se o usuário pode realizar a operação
         validateTransaction(item, Situacao.DISPONIVEL, Situacao.RESERVADO);
 
-        item.addResposta(resposta);
+        item.addCorrecao(correcao);
 
-        Set<Long> respondidas = item.getRespostas().stream().map(a -> a.getChave().getId()).collect(Collectors.toSet());
-        if (item.getChave().stream().allMatch(a -> respondidas.contains(a.getId()))) {
+        Set<Long> corrigidos = item.getCorrecaos().stream().map(a -> a.getChave().getId()).collect(Collectors.toSet());
+        if (item.getChave().stream().allMatch(a -> corrigidos.contains(a.getId()))) {
             //se todas as chaves já foram corrigidas, o item recebe a situacao CORRIGIDO
             item.setSituacao(Situacao.CORRIGIDO);
         } else {
@@ -101,6 +101,6 @@ public class ItemService {
         }
 
         repository.save(item);
-        return resposta;
+        return correcao;
     }
 }

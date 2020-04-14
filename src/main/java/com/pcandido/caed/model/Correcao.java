@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
-public class Resposta {
+public class Correcao {
 
     private Long id;
     private LocalDateTime dataHora;
@@ -20,7 +20,7 @@ public class Resposta {
         return id;
     }
 
-    public Resposta setId(Long id) {
+    public Correcao setId(Long id) {
         this.id = id;
         return this;
     }
@@ -30,7 +30,7 @@ public class Resposta {
         return dataHora;
     }
 
-    public Resposta setDataHora(LocalDateTime hora) {
+    public Correcao setDataHora(LocalDateTime hora) {
         this.dataHora = hora;
         return this;
     }
@@ -39,7 +39,7 @@ public class Resposta {
         return corretor;
     }
 
-    public Resposta setCorretor(String corretor) {
+    public Correcao setCorretor(String corretor) {
         this.corretor = corretor;
         return this;
     }
@@ -50,7 +50,7 @@ public class Resposta {
         return item;
     }
 
-    public Resposta setItem(Item item) {
+    public Correcao setItem(Item item) {
         this.item = item;
         return this;
     }
@@ -61,7 +61,7 @@ public class Resposta {
         return chave;
     }
 
-    public Resposta setChave(Chave chave) {
+    public Correcao setChave(Chave chave) {
         this.chave = chave;
         return this;
     }
@@ -72,7 +72,7 @@ public class Resposta {
         return opcao;
     }
 
-    public Resposta setOpcao(Opcao opcao) {
+    public Correcao setOpcao(Opcao opcao) {
         this.opcao = opcao;
         return this;
     }

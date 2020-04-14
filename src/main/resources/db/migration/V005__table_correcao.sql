@@ -1,4 +1,4 @@
-create table resposta
+create table correcao
 (
     id        bigint    not null auto_increment primary key,
     data_hora timestamp not null,
