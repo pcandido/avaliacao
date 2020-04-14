@@ -298,7 +298,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void nao_deve_aceitar_correcao_se_nao_e_proximo_disponivel() throws DataException {
+    public void nao_deve_aceitar_correcao_se_nao_e_proximo_disponivel() {
         mockProximo(itemDisponivel1);
         assertThrows(NonNextForbiddenException.class, () -> service.setCorrecao(itemDisponivel2.getId(), correcao1));
     }
