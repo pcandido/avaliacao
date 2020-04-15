@@ -8,10 +8,9 @@ import com.pcandido.caed.model.Item;
 import com.pcandido.caed.model.Situacao;
 import com.pcandido.caed.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,22 +24,22 @@ public class ItemService {
         this.repository = repository;
     }
 
-    private Item getProximaDisponivel() throws NoAvailableItems {
+    private Item getProximoDisponivel() throws NoAvailableItems {
         return repository.findFirstBySituacaoOrderByOrdem(Situacao.DISPONIVEL).orElseThrow(NoAvailableItems::new);
     }
 
-    public Item getProxima() throws NoAvailableItems {
+    public Item getProximo() throws NoAvailableItems {
         try {
             //obtêm a próxima correção disponível do repositório
-            return getProximaDisponivel();
+            return getProximoDisponivel();
         } catch (NoAvailableItems e) {
             //se não existir nenhuma disponível, obtêm a próxima reservada
             return repository.findFirstBySituacaoOrderByOrdem(Situacao.RESERVADO).orElseThrow(NoAvailableItems::new);
         }
     }
 
-    public Page<Item> getReservadas(Pageable pageable) {
-        return this.repository.findAllBySituacao(Situacao.RESERVADO, pageable);
+    public List<Item> getReservadas() {
+        return this.repository.findAllBySituacao(Situacao.RESERVADO);
     }
 
     public void validateTransaction(Item item, Situacao... allowedFromSituacoes) throws IllegalTransactionException, NonNextForbiddenException {
@@ -52,7 +51,7 @@ public class ItemService {
         //se a situação for DISPONIVEL, a única correção que pode ser alterada é a próxima.
         if (item.getSituacao() == Situacao.DISPONIVEL) {
             try {
-                if (!getProximaDisponivel().getId().equals(item.getId())) {
+                if (!getProximoDisponivel().getId().equals(item.getId())) {
                     throw new NonNextForbiddenException();
                 }
             } catch (NoAvailableItems e) {
@@ -83,16 +82,16 @@ public class ItemService {
         return repository.save(toChange);
     }
 
-    public Correcao setCorrecao(long idItem, Correcao correcao) throws IllegalTransactionException, NonNextForbiddenException {
+    public List<Correcao> addCorrecoes(long idItem, List<Correcao> correcoes) throws IllegalTransactionException, NonNextForbiddenException {
         //o id da correção será recebido na URL, e não no corpo (dentro da correcao)
         Item item = repository.getOne(idItem);
         //verifica se o usuário pode realizar a operação
         validateTransaction(item, Situacao.DISPONIVEL, Situacao.RESERVADO);
 
-        item.addCorrecao(correcao);
+        correcoes.forEach(item::addCorrecao);
 
-        Set<Long> corrigidos = item.getCorrecaos().stream().map(a -> a.getChave().getId()).collect(Collectors.toSet());
-        if (item.getChave().stream().allMatch(a -> corrigidos.contains(a.getId()))) {
+        Set<Long> corrigidos = item.getCorrecoes().stream().map(a -> a.getChave().getId()).collect(Collectors.toSet());
+        if (item.getChaves().stream().allMatch(a -> corrigidos.contains(a.getId()))) {
             //se todas as chaves já foram corrigidas, o item recebe a situacao CORRIGIDO
             item.setSituacao(Situacao.CORRIGIDO);
         } else {
@@ -101,6 +100,6 @@ public class ItemService {
         }
 
         repository.save(item);
-        return correcao;
+        return correcoes;
     }
 }

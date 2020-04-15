@@ -1,5 +1,7 @@
 package com.pcandido.caed.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -15,6 +17,7 @@ public class Opcao {
     private Chave chave;
 
     @Id
+    @JsonIgnore
     public Long getId() {
         return id;
     }
@@ -48,6 +51,7 @@ public class Opcao {
 
     @ManyToOne
     @NotNull
+    @JsonIgnore
     public Chave getChave() {
         return chave;
     }

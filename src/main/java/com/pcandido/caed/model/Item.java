@@ -1,5 +1,8 @@
 package com.pcandido.caed.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -15,8 +18,8 @@ public class Item {
     private String solicitacao;
     private Situacao situacao;
     private long ordem;
-    private List<Chave> chave;
-    private List<Correcao> correcaos;
+    private List<Chave> chaves;
+    private List<Correcao> correcoes;
 
     @Id
     public Long getId() {
@@ -66,6 +69,7 @@ public class Item {
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @JsonIgnore
     public Situacao getSituacao() {
         return situacao;
     }
@@ -76,6 +80,7 @@ public class Item {
     }
 
     @NotNull
+    @JsonIgnore
     public long getOrdem() {
         return ordem;
     }
@@ -86,35 +91,38 @@ public class Item {
     }
 
     @ManyToMany
-    public List<Chave> getChave() {
-        return chave;
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "chave_id"))
+    @JsonProperty("chave")
+    public List<Chave> getChaves() {
+        return chaves;
     }
 
-    public Item setChave(List<Chave> chave) {
-        this.chave = chave;
+    public Item setChaves(List<Chave> chave) {
+        this.chaves = chave;
         return this;
     }
 
     public Item addChave(Chave chave) {
-        if (this.chave == null) this.chave = new ArrayList<>();
-        this.chave.add(chave);
+        if (this.chaves == null) this.chaves = new ArrayList<>();
+        this.chaves.add(chave);
         return this;
     }
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
-    public List<Correcao> getCorrecaos() {
-        return correcaos;
+    @JsonIgnore
+    public List<Correcao> getCorrecoes() {
+        return correcoes;
     }
 
-    public Item setCorrecaos(List<Correcao> correcaos) {
-        this.correcaos = correcaos;
+    public Item setCorrecoes(List<Correcao> correcaos) {
+        this.correcoes = correcaos;
         return this;
     }
 
     public Item addCorrecao(Correcao correcao) {
-        if (this.correcaos == null) this.correcaos = new ArrayList<>();
+        if (this.correcoes == null) this.correcoes = new ArrayList<>();
         correcao.setItem(this);
-        this.correcaos.add(correcao);
+        this.correcoes.add(correcao);
         return this;
     }
 }

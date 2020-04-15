@@ -5,6 +5,6 @@ create table chave
 );
 
 insert into chave(id, titulo)
-values (186, 'Chave de correção 1'),
-       (187, 'Chave de correção 2'),
-       (188, 'Chave de correção 3');
+values (186, 'Titulo 1'),
+       (187, 'Titulo 2'),
+       (188, 'Titulo 3');

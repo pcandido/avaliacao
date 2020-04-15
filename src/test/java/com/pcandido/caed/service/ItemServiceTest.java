@@ -11,10 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -166,7 +162,7 @@ public class ItemServiceTest {
     public void deve_buscar_proximo_item_disponivel_se_existir() throws DataException {
         mockProximo(itemDisponivel1);
         //chama o método a ser testado
-        Item actualNext = service.getProxima();
+        Item actualNext = service.getProximo();
         //verifica se o objeto retornado é igual à amostra, isso significa que se houver pelo menos uma DISPONIVEL, ela será retornada
         assertEquals(itemDisponivel1, actualNext);
         //também verifica se o repository foi invocado
@@ -178,7 +174,7 @@ public class ItemServiceTest {
         mockProximoEmpty(Situacao.DISPONIVEL);
         mockProximo(itemReservada);
 
-        Item actualNext = service.getProxima();
+        Item actualNext = service.getProximo();
         assertEquals(itemReservada, actualNext);
 
         //verifica se o repositório foi chamado duas vezes (uma para DISPONVEL e outra para RESERVADA)
@@ -192,7 +188,7 @@ public class ItemServiceTest {
         mockProximoEmpty(Situacao.RESERVADO);
 
         //invoca o método e espera uma exceção
-        assertThrows(NoAvailableItems.class, () -> service.getProxima());
+        assertThrows(NoAvailableItems.class, () -> service.getProximo());
     }
 
     @Test
@@ -269,38 +265,36 @@ public class ItemServiceTest {
 
     @Test
     public void deve_retornar_todos_as_RESERVADAS_quando_solicitado() {
-        Pageable pageable = PageRequest.of(1, 10);
         List<Item> samples = List.of(
                 itemReservada,
                 new Item().setId(6L).setSituacao(Situacao.RESERVADO),
                 new Item().setId(7L).setSituacao(Situacao.RESERVADO),
                 new Item().setId(8L).setSituacao(Situacao.RESERVADO)
         );
-        Page<Item> page = new PageImpl<>(samples, pageable, 20);
 
-        when(repository.findAllBySituacao(Situacao.RESERVADO, pageable)).thenAnswer(invocationOnMock -> page);
-        Page<Item> result = service.getReservadas(pageable);
+        when(repository.findAllBySituacao(Situacao.RESERVADO)).thenAnswer(invocationOnMock -> samples);
+        List<Item> result = service.getReservadas();
 
-        assertEquals(page, result);
-        verify(repository).findAllBySituacao(Situacao.RESERVADO, pageable);
+        assertEquals(samples, result);
+        verify(repository).findAllBySituacao(Situacao.RESERVADO);
     }
 
     @Test
     public void nao_deve_possibilitar_corrigir_um_item_CORRIGIDO() {
         mockProximo(itemDisponivel1);
-        assertThrows(IllegalTransactionException.class, () -> service.setCorrecao(itemCorrigida.getId(), correcao1));
+        assertThrows(IllegalTransactionException.class, () -> service.addCorrecoes(itemCorrigida.getId(), List.of(correcao1)));
     }
 
     @Test
     public void nao_deve_possibilitar_corrigir_um_item_COM_DEFEITO() {
         mockProximo(itemDisponivel1);
-        assertThrows(IllegalTransactionException.class, () -> service.setCorrecao(itemComDefeito.getId(), correcao1));
+        assertThrows(IllegalTransactionException.class, () -> service.addCorrecoes(itemComDefeito.getId(), List.of(correcao1)));
     }
 
     @Test
     public void nao_deve_aceitar_correcao_se_nao_e_proximo_disponivel() {
         mockProximo(itemDisponivel1);
-        assertThrows(NonNextForbiddenException.class, () -> service.setCorrecao(itemDisponivel2.getId(), correcao1));
+        assertThrows(NonNextForbiddenException.class, () -> service.addCorrecoes(itemDisponivel2.getId(), List.of(correcao1)));
     }
 
     @Test
@@ -309,7 +303,7 @@ public class ItemServiceTest {
         mockSave(itemReservada, Situacao.CORRIGIDO);
         itemReservada.addCorrecao(correcao1);
 
-        Correcao saved = service.setCorrecao(itemReservada.getId(), correcao2);
+        Correcao saved = service.addCorrecoes(itemReservada.getId(), List.of(correcao2)).get(0);
         assertEquals(itemReservada, saved.getItem());
         assertEquals(Situacao.CORRIGIDO, saved.getItem().getSituacao());
         verify(repository).save(itemReservada);
@@ -320,7 +314,7 @@ public class ItemServiceTest {
         mockProximo(itemDisponivel1);
         mockSave(itemDisponivel1, Situacao.RESERVADO);
 
-        Correcao saved = service.setCorrecao(itemDisponivel1.getId(), correcao2);
+        Correcao saved = service.addCorrecoes(itemDisponivel1.getId(), List.of(correcao2)).get(0);
         assertEquals(itemDisponivel1, saved.getItem());
         assertEquals(Situacao.RESERVADO, saved.getItem().getSituacao());
         verify(repository).save(itemDisponivel1);
@@ -332,15 +326,15 @@ public class ItemServiceTest {
 
         when(repository.save(itemDisponivel1)).thenAnswer(invocationOnMock -> {
             Item saving = (Item) invocationOnMock.getArguments()[0];
-            assertFalse(itemDisponivel1.getCorrecaos().isEmpty());
-            assertEquals(itemDisponivel1.getCorrecaos().get(0), correcao2);
+            assertFalse(itemDisponivel1.getCorrecoes().isEmpty());
+            assertEquals(itemDisponivel1.getCorrecoes().get(0), correcao2);
             return saving;
         });
 
-        Correcao saved = service.setCorrecao(itemDisponivel1.getId(), correcao2);
+        Correcao saved = service.addCorrecoes(itemDisponivel1.getId(), List.of(correcao2)).get(0);
         assertEquals(correcao2, saved);
-        assertFalse(saved.getItem().getCorrecaos().isEmpty());
-        assertEquals(correcao2, itemDisponivel1.getCorrecaos().get(0));
+        assertFalse(saved.getItem().getCorrecoes().isEmpty());
+        assertEquals(correcao2, itemDisponivel1.getCorrecoes().get(0));
         assertEquals(itemDisponivel1, saved.getItem());
         verify(repository).save(itemDisponivel1);
     }

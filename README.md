@@ -45,10 +45,10 @@ RESERVADA -> CORRIGIDA | COM_DEFEITO
 
 ## Como executar
 
-## Regras extras
+## Tomadas de decisão
 
 Nem todas as regras de negócio ficaram claras no documento, então tomei
-a liberdade de definir algumas regras extras, baseadas na minha 
+a liberdade de tomar algumas decisões, baseadas na minha 
 própria compreensão do problema. Vou descrever aqui quais foram elas.
 
  * Um item pode ter mais de uma chave de correção (mais de uma questão
@@ -59,7 +59,18 @@ própria compreensão do problema. Vou descrever aqui quais foram elas.
    como reservado, para que o corretor possa voltar ao item quando
    desejasse, e pensando em um cenário multi-corretores, para que ele
    a partir desse momento se responsabilize pela correção do restante
-   daquele item. 
+   daquele item.
+   
+ * Na regra #7 do documento, é descrito que um item pode ser reservado
+  para correção futura, seguindo as validações de ordenação. Contudo,
+  no exemplo do endpoint "Reservar correção", é esperado um payload 
+  com uma chave (e o valor da correção)
+    * Vou considerar como sendo um erro do documento (possivelmente
+    uma cópia do endpoint anterior), uma vez que não faria sentido
+    receber uma chave, se todo o item será reservado. Se apenas a
+    chave devesse ser reservada, entraria em desacordo com a regra #7.
+    Neste caso, vou considerar que o payload do endpoint "Reservar 
+    correção" deve ser vazio.
 
 ## Comentários e explicações 
 
