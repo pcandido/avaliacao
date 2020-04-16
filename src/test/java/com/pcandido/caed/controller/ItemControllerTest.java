@@ -68,7 +68,7 @@ class ItemControllerTest {
     // executa duas SQLs antes de executar o teste, um para limpar itens e outro para inserir os necessários para esse testes
     //padrão de nomenclatura para SQLs de povoamento: (D)isponivel, (R)eservado, (C)orrigido, com_d(E)feito
     public void deve_buscar_proximo_item() {
-        testSucessoGetApi("proximo", "deve_buscar_proximo_item.json");
+        testSucessoGetApi("proxima", "deve_buscar_proximo_item.json");
     }
 
     @Test
@@ -111,7 +111,7 @@ class ItemControllerTest {
     @Sql({"classpath:sqls/clear.sql", "classpath:sqls/EC.sql"})
     public void deve_mostrar_erro_se_nao_tiver_proximo() {
         testErroGetApi(
-                "proximo",
+                "proxima",
                 HttpStatus.NOT_FOUND,
                 "SEM_CORRECAO",
                 "Não existem mais correções disponíveis");

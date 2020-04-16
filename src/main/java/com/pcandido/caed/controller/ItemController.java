@@ -25,7 +25,7 @@ public class ItemController {
      * Carrega próxima correção disponível, e se não exitir nenhuma, a
      * próxima reservada.
      */
-    @GetMapping("proximo")
+    @GetMapping("proxima")
     public ResponseEntity<DataWrapper<Item>> getProximo() throws SemItemException {
         return ResponseEntity.ok().body(new DataWrapper<>(service.getProximo()));
     }
