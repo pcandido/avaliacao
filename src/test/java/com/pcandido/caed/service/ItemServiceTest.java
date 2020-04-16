@@ -1,9 +1,6 @@
 package com.pcandido.caed.service;
 
-import com.pcandido.caed.exception.AppException;
-import com.pcandido.caed.exception.ForaDeOrdemException;
-import com.pcandido.caed.exception.SemItemException;
-import com.pcandido.caed.exception.TransicaoIlegalException;
+import com.pcandido.caed.exception.*;
 import com.pcandido.caed.model.*;
 import com.pcandido.caed.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +24,8 @@ public class ItemServiceTest {
 
     @MockBean
     private ItemRepository repository;
+    @MockBean
+    private OpcaoService opcaoService;
 
     Item itemDisponivel1;
     Item itemDisponivel2;
@@ -38,30 +37,23 @@ public class ItemServiceTest {
 
 
     @BeforeEach
-    private void setup() {
+    private void setup() throws OpcaoInvalidaException {
+        Opcao opcaoC1 = new Opcao().setId(1L).setValor("C1").setDescricao("Opção 1");
+        Opcao opcaoC2 = new Opcao().setId(2L).setValor("C2").setDescricao("Opção 2");
+        Opcao opcaoC3 = new Opcao().setId(3L).setValor("C3").setDescricao("Opção 3");
+        Opcao opcaoC4 = new Opcao().setId(4L).setValor("C4").setDescricao("Opção 4");
+
         Chave chave1 = new Chave()
                 .setId(1L)
                 .setTitulo("Chave 1")
-                .addOpcao(new Opcao()
-                        .setId(1L)
-                        .setValor("C1")
-                        .setDescricao("Opção 1"))
-                .addOpcao(new Opcao()
-                        .setId(2L)
-                        .setValor("C2")
-                        .setDescricao("Opção 2"));
+                .addOpcao(opcaoC1)
+                .addOpcao(opcaoC2);
 
         Chave chave2 = new Chave()
                 .setId(2L)
                 .setTitulo("Chave 2")
-                .addOpcao(new Opcao()
-                        .setId(3L)
-                        .setValor("C3")
-                        .setDescricao("Opção 3"))
-                .addOpcao(new Opcao()
-                        .setId(4L)
-                        .setValor("C4")
-                        .setDescricao("Opção 4"));
+                .addOpcao(opcaoC3)
+                .addOpcao(opcaoC4);
 
         this.itemReservada = new Item()
                 .setId(1L)
@@ -134,6 +126,11 @@ public class ItemServiceTest {
         when(repository.getOne(3L)).thenAnswer(invocationOnMock -> itemComDefeito);
         when(repository.getOne(4L)).thenAnswer(invocationOnMock -> itemDisponivel1);
         when(repository.getOne(5L)).thenAnswer(invocationOnMock -> itemDisponivel2);
+
+        when(opcaoService.getOpcao(chave1, "C1")).thenAnswer(a -> opcaoC1);
+        when(opcaoService.getOpcao(chave1, "C2")).thenAnswer(a -> opcaoC2);
+        when(opcaoService.getOpcao(chave1, "C3")).thenAnswer(a -> opcaoC3);
+        when(opcaoService.getOpcao(chave1, "C4")).thenAnswer(a -> opcaoC4);
     }
 
     private void mockProximo(Item item) {
