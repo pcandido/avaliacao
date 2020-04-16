@@ -45,6 +45,34 @@ RESERVADA -> CORRIGIDA | COM_DEFEITO
 
 ## Como executar
 
+O projeto está preparado para ser nos três principais sistemas operacionais:
+Linux, OSX e Windows.
+
+Existem 3 formas de se executar o projeto, mas cada uma tem suas 
+dependências:
+ 1. A partir do código fonte _(pré-requisito: java)_: o projeto está
+ sendo versionado com dois scripts executáveis (para disferentes 
+ sistemas operacionais): `mvnw` e `mvnw.cmd`. Esses scripts possuem
+ uma versão portável do maven, que pode ser utilizado para buildar o
+ projeto. Basta executar na raiz do projeto: `./[mvnw|mvnw.cmd] package`.
+ Será gerado o diretório target, e dentro dele será possível encontrar o jar.
+ Para executar o jar, basta usar: `java -jar ./target/caed-java-<version>.jar`
+ 
+ 2. Construir uma imagem docker a partir do `Dockerfile` _(pré-requisito:
+ docker)_: o projeto está sendo versionado com o Dockerfile. A partir dele é
+ possível construir uma nova imagem docker para então executar o projeto.
+ Para construir uma imagem, utilizar: `docker build -t nome_imagem .`.
+ Para executar a imagem recem construída, basta utilizar: `docker run
+ -p 8080:8080 nome_imagem`.
+ 
+ 3. Executar a partir de uma imagem já construída _(pré-requisito:
+ docker)_: O processo de CI/CD (explicado abaixo) automatiza o build
+ da imagem docker e o seu deploy (push) para o registro de containers
+ DockerHub. Então é possível executar o projeto sem precisar do código
+ fonte com: `docker run -p 8080:8080 pcandido/caed`
+ 
+Em todos os casos, a API estará disponível para consumo na porta `8080`.
+
 ## Tomadas de decisão
 
 Nem todas as regras de negócio ficaram claras no documento, então tomei
@@ -72,11 +100,84 @@ própria compreensão do problema. Vou descrever aqui quais foram elas.
     Neste caso, vou considerar que o payload do endpoint "Reservar 
     correção" deve ser vazio.
 
-## Comentários e explicações 
+## Arquitetura
 
-### Java vs NodeJS 
+A aplicação foi dividida em camadas lógicas que dividem as 
+responsabilidades e minimiza o acoplamento, o que resulta em um maior
+índice de manutenabilidade. As camadas são:
+ * Model - responsável pode definir o modelo de dados do domínio,
+ quais atributos cada propriedade terá e os relacionamentos entre
+ diferentes objetos. Uma vez utilizando JPA (Java Persistence API) e
+ um ORM vinculado (Hibernate), o modelo (e suas anotações) também é
+ responsável pelo mapeamento objeto-relacional. Além das anotações
+ relativas ao ORM, anotações para validação automatizada também foram
+ adicionadas.
+ * Repository - responsável pela persistência e recuperação de dados.
+ Boa parte do trabalho dessa camada foi transferida para o ORM. Veja
+ que através do JPA, é possível fazer consultas personalizadas apenas
+ definindo o nome de um método abstrato.
+ * Controller - responsável por receber e responder as requisições 
+ REST. Qualquer trabalho relativo a interpretar ou formatar dados de
+ requisições deve ser feito pelo Controller, mas não deve processar
+ regras de negócio, para isso deve usar o Service. 
+ * Service - responsável por executar toda a regra de negócio. O uso
+ mais comum é receber uma ação do controller, processar a regra de
+ negócio, chamar o repository quando necessário, e responder de volta
+ ao controller. Veja que apesar de receber dados do controller, não
+ deve lidar com dados de requisição, deve receber do controller dados
+ já parseados para o domínio da aplicação (model). 
+ 
+Além das camadas apresentadas, existe um pacote destinado a declarar e
+manipular exceções que são disparadas (muitas vezes propositalmente)
+pela aplicação. As exceções que não forem tratadas até o fim da 
+execução do controller são enviadas para este handler que irá formatar
+uma resposta REST baseda na exceção. Lidar corretamente com exceções
+permite ao projeto gerar um fluxo próprio de erros e tratamento dos 
+mesmos. 
 
-### Arquitetura
+## Testes
+
+Foram implementados testes unitários para a camada de serviço e testes
+de aceitação. Normalmente eu implementaria testes unitários ou de 
+integração para a camada de controllers, mas não o fiz pois a camada
+contoller deste projeto ficou muito simples, apenas redirecionando o
+fluxo para os serviços. A camada repository também ficou muito simples,
+mas em alguns casos, é interessante aplicar testes de integração 
+(repository -> database), principalmente quando tempos HQLs ou raw
+queries. Não tenho o costume de criar testes para a camada de modelo.
+
+## CI/CD
+
+Para integração, build e deploy, foi usado o CI/CD do bitbucket. A
+configuração é feita pelo arquivo `bitbucket-pipelines.yml` e é
+executado automaticamente a cada push no repositório.
+O pipeline configurado realizará os seguintes passos:
+ * `mvn -B test package`
+   * Ao executar o maven, ele irá baixar todas as dependências,
+   executar os testes unitários/de aceitação, e empacotar o aplicativo
+   em um arquivo `.jar`
+ * `docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD`
+   * Esse passo autentica o serviço DockerHub, para permitir push
+   da imagem docker. O nome de usuário e senha são armazenados fora
+   do script em um local seguro.
+ * `docker build -t pcandido/caed .`
+   * A imagem é construída a partir do `Dockerfile`
+ * `docker push pcandido/caed`
+   * A imagem recem construída é enviada para o DockerHub, 
+   concretizando o passo de deploy
+
+## Comentários
+
+### Complexidade
+
+Teria sido possível criar esse pequeno projeto de forma muito mais
+simples, entretanto, estou o utilizando para mostrar meus conhecimentos
+que podem ser aplicados em um projeto real e robusto. A complexidade 
+inerente a minha decisão é bem maior do que o esperado para um projeto
+desse porte, mas é o básico para um projeto que se pretende escalar.
 
 ### Banco de dados
 
+Para simplificar a distribuição, estou utilizando um banco de dados em
+memória (H2), para evitar qualquer dependência de um SGDB externo
+(mesmo utilizando docker).
