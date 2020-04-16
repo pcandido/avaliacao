@@ -1,5 +1,7 @@
 package com.pcandido.caed.controller.wrapper;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ErrorWrapper extends Wrapper {
 
     private final String tipo;
@@ -15,6 +17,7 @@ public class ErrorWrapper extends Wrapper {
         return tipo;
     }
 
+    @JsonProperty("descrição")
     public String getDescricao() {
         return descricao;
     }

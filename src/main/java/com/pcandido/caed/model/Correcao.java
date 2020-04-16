@@ -9,7 +9,6 @@ public class Correcao {
 
     private Long id;
     private LocalDateTime dataHora;
-    private String corretor;
     private Item item;
     private Chave chave;
     private Opcao opcao;
@@ -32,15 +31,6 @@ public class Correcao {
 
     public Correcao setDataHora(LocalDateTime hora) {
         this.dataHora = hora;
-        return this;
-    }
-
-    public String getCorretor() {
-        return corretor;
-    }
-
-    public Correcao setCorretor(String corretor) {
-        this.corretor = corretor;
         return this;
     }
 

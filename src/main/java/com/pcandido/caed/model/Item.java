@@ -108,7 +108,7 @@ public class Item {
         return this;
     }
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     @JsonIgnore
     public List<Correcao> getCorrecoes() {
         return correcoes;

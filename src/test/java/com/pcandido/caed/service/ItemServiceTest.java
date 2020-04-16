@@ -1,9 +1,9 @@
 package com.pcandido.caed.service;
 
-import com.pcandido.caed.exception.DataException;
-import com.pcandido.caed.exception.IllegalTransactionException;
-import com.pcandido.caed.exception.NoAvailableItems;
-import com.pcandido.caed.exception.NonNextForbiddenException;
+import com.pcandido.caed.exception.AppException;
+import com.pcandido.caed.exception.ForaDeOrdemException;
+import com.pcandido.caed.exception.SemItemException;
+import com.pcandido.caed.exception.TransicaoIlegalException;
 import com.pcandido.caed.model.*;
 import com.pcandido.caed.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -120,13 +120,11 @@ public class ItemServiceTest {
 
         this.correcao1 = new Correcao()
                 .setId(1L)
-                .setCorretor("Corretor 1")
                 .setChave(chave1)
                 .setOpcao(chave1.getOpcoes().get(0));
 
         this.correcao2 = new Correcao()
                 .setId(2L)
-                .setCorretor("Corretor 2")
                 .setChave(chave2)
                 .setOpcao(chave2.getOpcoes().get(0));
 
@@ -159,7 +157,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void deve_buscar_proximo_item_disponivel_se_existir() throws DataException {
+    public void deve_buscar_proximo_item_disponivel_se_existir() throws AppException {
         mockProximo(itemDisponivel1);
         //chama o método a ser testado
         Item actualNext = service.getProximo();
@@ -170,7 +168,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void deve_buscar_proximo_item_reservado_se_nao_existir_disponiveis() throws DataException {
+    public void deve_buscar_proximo_item_reservado_se_nao_existir_disponiveis() throws AppException {
         mockProximoEmpty(Situacao.DISPONIVEL);
         mockProximo(itemReservada);
 
@@ -188,11 +186,11 @@ public class ItemServiceTest {
         mockProximoEmpty(Situacao.RESERVADO);
 
         //invoca o método e espera uma exceção
-        assertThrows(NoAvailableItems.class, () -> service.getProximo());
+        assertThrows(SemItemException.class, () -> service.getProximo());
     }
 
     @Test
-    public void deve_possibilitar_mudar_status_de_um_item_para_COM_DEFEITO() throws DataException {
+    public void deve_possibilitar_mudar_status_de_um_item_para_COM_DEFEITO() throws AppException {
         mockProximo(itemDisponivel1);
         mockSave(itemDisponivel1, Situacao.COM_DEFEITO);
 
@@ -204,11 +202,11 @@ public class ItemServiceTest {
     @Test
     public void nao_deve_possibilitar_mudar_status_de_um_item_disponivel_que_nao_seja_o_proximo() {
         mockProximo(itemDisponivel1);
-        assertThrows(NonNextForbiddenException.class, () -> service.setComDefeito(itemDisponivel2.getId()));
+        assertThrows(ForaDeOrdemException.class, () -> service.setComDefeito(itemDisponivel2.getId()));
     }
 
     @Test
-    public void deve_possibilitar_mudar_status_de_um_item_reservado_que_nao_seja_o_proximo() throws DataException {
+    public void deve_possibilitar_mudar_status_de_um_item_reservado_que_nao_seja_o_proximo() throws AppException {
         mockProximo(itemDisponivel1);
         mockSave(itemReservada, Situacao.COM_DEFEITO);
 
@@ -220,17 +218,17 @@ public class ItemServiceTest {
     @Test
     public void nao_deve_possibilitar_mudar_status_de_um_item_CORRIGIDO() {
         mockProximo(itemDisponivel1);
-        assertThrows(IllegalTransactionException.class, () -> service.setComDefeito(itemCorrigida.getId()));
+        assertThrows(TransicaoIlegalException.class, () -> service.setComDefeito(itemCorrigida.getId()));
     }
 
     @Test
     public void nao_deve_possibilitar_mudar_status_de_um_item_COM_DEFEITO() {
         mockProximo(itemDisponivel1);
-        assertThrows(IllegalTransactionException.class, () -> service.setComDefeito(itemComDefeito.getId()));
+        assertThrows(TransicaoIlegalException.class, () -> service.setComDefeito(itemComDefeito.getId()));
     }
 
     @Test
-    public void deve_possibilitar_reservar_o_proximo_item_disponivel() throws DataException {
+    public void deve_possibilitar_reservar_o_proximo_item_disponivel() throws AppException {
         mockProximo(itemDisponivel1);
         mockSave(itemDisponivel1, Situacao.RESERVADO);
 
@@ -242,25 +240,25 @@ public class ItemServiceTest {
     @Test
     public void nao_deve_possibilitar_reservar_um_item_disponivel_que_nao_seja_o_proximo() {
         mockProximo(itemDisponivel1);
-        assertThrows(NonNextForbiddenException.class, () -> service.setReservada(itemDisponivel2.getId()));
+        assertThrows(ForaDeOrdemException.class, () -> service.setReservada(itemDisponivel2.getId()));
     }
 
     @Test
     public void nao_deve_possibilitar_reservar_um_item_RESERVADO() {
         mockProximo(itemDisponivel1);
-        assertThrows(IllegalTransactionException.class, () -> service.setReservada(itemReservada.getId()));
+        assertThrows(TransicaoIlegalException.class, () -> service.setReservada(itemReservada.getId()));
     }
 
     @Test
     public void nao_deve_possibilitar_reservar_um_item_CORRIGIDO() {
         mockProximo(itemDisponivel1);
-        assertThrows(IllegalTransactionException.class, () -> service.setReservada(itemCorrigida.getId()));
+        assertThrows(TransicaoIlegalException.class, () -> service.setReservada(itemCorrigida.getId()));
     }
 
     @Test
     public void nao_deve_possibilitar_reservar_um_item_COM_DEFEITO() {
         mockProximo(itemDisponivel1);
-        assertThrows(IllegalTransactionException.class, () -> service.setReservada(itemComDefeito.getId()));
+        assertThrows(TransicaoIlegalException.class, () -> service.setReservada(itemComDefeito.getId()));
     }
 
     @Test
@@ -282,23 +280,23 @@ public class ItemServiceTest {
     @Test
     public void nao_deve_possibilitar_corrigir_um_item_CORRIGIDO() {
         mockProximo(itemDisponivel1);
-        assertThrows(IllegalTransactionException.class, () -> service.addCorrecoes(itemCorrigida.getId(), List.of(correcao1)));
+        assertThrows(TransicaoIlegalException.class, () -> service.addCorrecoes(itemCorrigida.getId(), List.of(correcao1)));
     }
 
     @Test
     public void nao_deve_possibilitar_corrigir_um_item_COM_DEFEITO() {
         mockProximo(itemDisponivel1);
-        assertThrows(IllegalTransactionException.class, () -> service.addCorrecoes(itemComDefeito.getId(), List.of(correcao1)));
+        assertThrows(TransicaoIlegalException.class, () -> service.addCorrecoes(itemComDefeito.getId(), List.of(correcao1)));
     }
 
     @Test
     public void nao_deve_aceitar_correcao_se_nao_e_proximo_disponivel() {
         mockProximo(itemDisponivel1);
-        assertThrows(NonNextForbiddenException.class, () -> service.addCorrecoes(itemDisponivel2.getId(), List.of(correcao1)));
+        assertThrows(ForaDeOrdemException.class, () -> service.addCorrecoes(itemDisponivel2.getId(), List.of(correcao1)));
     }
 
     @Test
-    public void deve_alterar_situacao_para_corrigido_se_todas_as_chaves_foram_corrigidas() throws DataException {
+    public void deve_alterar_situacao_para_corrigido_se_todas_as_chaves_foram_corrigidas() throws AppException {
         mockProximo(itemDisponivel1);
         mockSave(itemReservada, Situacao.CORRIGIDO);
         itemReservada.addCorrecao(correcao1);
@@ -310,7 +308,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void deve_alterar_situacao_para_reservado_se_o_item_esta_parcialmente_corrigido() throws DataException {
+    public void deve_alterar_situacao_para_reservado_se_o_item_esta_parcialmente_corrigido() throws AppException {
         mockProximo(itemDisponivel1);
         mockSave(itemDisponivel1, Situacao.RESERVADO);
 
@@ -321,7 +319,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void deve_salvar_a_correcao() throws DataException {
+    public void deve_salvar_a_correcao() throws AppException {
         mockProximo(itemDisponivel1);
 
         when(repository.save(itemDisponivel1)).thenAnswer(invocationOnMock -> {

@@ -3,8 +3,8 @@ package com.pcandido.caed.controller;
 import com.pcandido.caed.controller.model.CorrecaoRequest;
 import com.pcandido.caed.controller.wrapper.DataWrapper;
 import com.pcandido.caed.controller.wrapper.DescricaoWrapper;
-import com.pcandido.caed.exception.DataException;
-import com.pcandido.caed.exception.NoAvailableItems;
+import com.pcandido.caed.exception.AppException;
+import com.pcandido.caed.exception.SemItemException;
 import com.pcandido.caed.model.Item;
 import com.pcandido.caed.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class ItemController {
      * próxima reservada.
      */
     @GetMapping("proximo")
-    public ResponseEntity<DataWrapper<Item>> getProximo() throws NoAvailableItems {
+    public ResponseEntity<DataWrapper<Item>> getProximo() throws SemItemException {
         return ResponseEntity.ok().body(new DataWrapper<>(service.getProximo()));
     }
 
@@ -42,7 +42,7 @@ public class ItemController {
      * Altera a situação de uma correção para reservada
      */
     @PostMapping("reservadas/{idItem}")
-    public ResponseEntity<DescricaoWrapper> reservar(@PathVariable long idItem) throws DataException {
+    public ResponseEntity<DescricaoWrapper> reservar(@PathVariable long idItem) throws AppException {
         service.setReservada(idItem);
         return ResponseEntity.ok().body(new DescricaoWrapper("Correção reservada com sucesso"));
     }
@@ -51,7 +51,7 @@ public class ItemController {
      * Salvar correção de uma determinada chave de um determinado item
      */
     @PostMapping("{idItem}")
-    public ResponseEntity<DescricaoWrapper> corrigir(@PathVariable long idItem, @RequestBody @Valid CorrecaoRequest correcaoRequest) throws DataException {
+    public ResponseEntity<DescricaoWrapper> corrigir(@PathVariable long idItem, @RequestBody @Valid CorrecaoRequest correcaoRequest) throws AppException {
         service.addCorrecoes(idItem, correcaoRequest.toCorrecoes());
         return ResponseEntity.ok().body(new DescricaoWrapper("Correção salva com sucesso"));
     }
@@ -60,7 +60,7 @@ public class ItemController {
      * Altera a situação de um item para COM_DEFEITO
      */
     @PostMapping("defeito/{idItem}")
-    public ResponseEntity<DescricaoWrapper> setComDefeito(@PathVariable long idItem) throws DataException {
+    public ResponseEntity<DescricaoWrapper> setComDefeito(@PathVariable long idItem) throws AppException {
         service.setComDefeito(idItem);
         return ResponseEntity.ok().body(new DescricaoWrapper("Correção marcada como defeito com sucesso"));
     }

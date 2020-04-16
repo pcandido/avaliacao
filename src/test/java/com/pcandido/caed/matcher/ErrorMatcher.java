@@ -15,7 +15,7 @@ public class ErrorMatcher extends BaseMatcher<String> {
         compareTo = new JsonObject();
         compareTo.add("situacao", new JsonPrimitive("ERRO"));
         compareTo.add("tipo", new JsonPrimitive(tipo));
-        compareTo.add("descricao", new JsonPrimitive(descricao));
+        compareTo.add("descrição", new JsonPrimitive(descricao));
     }
 
     @Override
