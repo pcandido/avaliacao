@@ -6,7 +6,7 @@ pipelines:
         caches:
           - maven
         script:
-          - mvn -B clean test package
+          - mvn -B test package
           - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
           - docker build -t pcandido/caed .
           - docker push pcandido/caed
