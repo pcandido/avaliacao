@@ -56,7 +56,10 @@ dependências:
  uma versão portável do maven, que pode ser utilizado para buildar o
  projeto. Basta executar na raiz do projeto: `./[mvnw|mvnw.cmd] package`.
  Será gerado o diretório target, e dentro dele será possível encontrar o jar.
- Para executar o jar, basta usar: `java -jar ./target/caed-java-<version>.jar`
+ Para executar o jar, basta usar: `java -jar ./target/caed-java-<version>.jar`.
+ O comando `package` automaticamente executa os testes antes do build,
+ mas é possível executar os testes de forma separada usando: 
+ `./[mvnw|mvnw.cmd] test`.
  
  2. Construir uma imagem docker a partir do `Dockerfile` _(pré-requisito:
  docker)_: o projeto está sendo versionado com o Dockerfile. A partir dele é
@@ -138,7 +141,7 @@ mesmos.
 ## Testes
 
 Foram implementados testes unitários para a camada de serviço e testes
-de aceitação. Normalmente eu implementaria testes unitários ou de 
+de aceitação/contrato. Normalmente eu implementaria testes unitários ou de 
 integração para a camada de controllers, mas não o fiz pois a camada
 contoller deste projeto ficou muito simples, apenas redirecionando o
 fluxo para os serviços. A camada repository também ficou muito simples,
