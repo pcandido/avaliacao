@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.pcandido</groupId>
-    <artifactId>caed-java</artifactId>
+    <artifactId>avaliacoes</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>caed-java</name>
-    <description>Projeto CAEd/UFJF</description>
+    <name>avaliacoes</name>
+    <description>Projeto Avaliações</description>
 
     <properties>
         <java.version>11</java.version>

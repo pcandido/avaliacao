@@ -1,7 +1,4 @@
-# CAEd
-
-Projeto desenvolvido como parte dos requisitos do processo seletivo
-para a vaga de Desenvolvimento de Sistemas Web da CAEd/UFJF.
+# Avaliações
 
 ## Descrição do problema
 Após a aplicação de uma determinada avaliação (ex. ENEM) os cadernos de
