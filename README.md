@@ -1,5 +1,7 @@
 # Avaliações
 
+Os requisitos desse projeto foram extraídos de um edital de seleção.
+
 ## Descrição do problema
 Após a aplicação de uma determinada avaliação (ex. ENEM) os cadernos de
 prova respondidos pelos estudantes entram no processo de correção.
@@ -53,7 +55,7 @@ dependências:
  uma versão portável do maven, que pode ser utilizado para buildar o
  projeto. Basta executar na raiz do projeto: `./[mvnw|mvnw.cmd] package`.
  Será gerado o diretório target, e dentro dele será possível encontrar o jar.
- Para executar o jar, basta usar: `java -jar ./target/caed-java-<version>.jar`.
+ Para executar o jar, basta usar: `java -jar ./target/avaliacao-<version>.jar`.
  O comando `package` automaticamente executa os testes antes do build,
  mas é possível executar os testes de forma separada usando: 
  `./[mvnw|mvnw.cmd] test`.
@@ -69,7 +71,7 @@ dependências:
  docker)_: O processo de CI/CD (explicado abaixo) automatiza o build
  da imagem docker e o seu deploy (push) para o registro de containers
  DockerHub. Então é possível executar o projeto sem precisar do código
- fonte com: `docker run -p 8080:8080 pcandido/caed`
+ fonte com: `docker run -p 8080:8080 pcandido/avaliacao`
  
 Em todos os casos, a API estará disponível para consumo na porta `8080`.
 
@@ -160,9 +162,9 @@ O pipeline configurado realizará os seguintes passos:
    * Esse passo autentica o serviço DockerHub, para permitir push
    da imagem docker. O nome de usuário e senha são armazenados fora
    do script em um local seguro.
- * `docker build -t pcandido/caed .`
+ * `docker build -t pcandido/avaliacao .`
    * A imagem é construída a partir do `Dockerfile`
- * `docker push pcandido/caed`
+ * `docker push pcandido/avaliacao`
    * A imagem recem construída é enviada para o DockerHub, 
    concretizando o passo de deploy
 
